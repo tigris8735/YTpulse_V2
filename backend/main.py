@@ -5,10 +5,11 @@ from database import engine
 from models import Base
 from routers import auth, trends, preview, generate, jobs, payments
 
-Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI(title="YT Pulse API", version="1.0")
 
+Base.metadata.create_all(bind=engine)
 origins = [
     "https://ytpulse-v2-1.onrender.com",  # URL вашего фронта
     "http://localhost:5173",              # для локальной разработки (опционально)
