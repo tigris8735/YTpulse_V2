@@ -6,10 +6,10 @@ from typing import Optional
 from datetime import datetime, timezone, timedelta
 import json
 
-from ..database import get_db
-from ..models import User, Payment
-from ..auth import get_current_user
-from ..services.yookassa_client import create_payment, get_payment_info
+from database import get_db
+from models import User, Payment
+from auth import get_current_user
+from services.yookassa_client import create_payment, get_payment_info
 
 router = APIRouter()
 

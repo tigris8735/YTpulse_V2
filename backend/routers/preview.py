@@ -2,9 +2,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Dict, Any
-from ..database import get_db
-from ..models import PreviewTags
-from ..services.analyzer_engine import analyze_preview
+from database import get_db
+from models import PreviewTags
+from services.analyzer_engine import analyze_preview
 
 router = APIRouter()
 

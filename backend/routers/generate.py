@@ -6,10 +6,10 @@ from typing import List, Dict, Any
 from datetime import datetime, timezone
 import uuid
 
-from ..database import get_db
-from ..models import User, GenerationJob
-from ..services.ai_clients import generate_preview_variants
-from ..auth import get_current_user, require_pro  # эти функции будут добавлены в auth.py
+from database import get_db
+from models import User, GenerationJob
+from services.ai_clients import generate_preview_variants
+from auth import get_current_user, require_pro  # эти функции будут добавлены в auth.py
 
 router = APIRouter()
 

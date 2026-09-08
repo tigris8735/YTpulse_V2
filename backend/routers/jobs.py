@@ -6,9 +6,9 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
 
-from ..database import get_db
-from ..models import User, GenerationJob
-from ..auth import get_current_user, require_pro
+from database import get_db
+from models import User, GenerationJob
+from auth import get_current_user, require_pro
 
 router = APIRouter()
 
