@@ -3,7 +3,7 @@ import httpx
 import json
 from typing import Dict, Any, List, Optional
 from tenacity import retry, stop_after_attempt, wait_exponential
-from ..config import settings
+from config import settings
 
 # ============================================
 # ТЕКСТОВЫЕ МОДЕЛИ (Groq / Gemini)

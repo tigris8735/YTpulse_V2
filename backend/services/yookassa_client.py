@@ -3,7 +3,7 @@ import httpx
 import uuid
 from typing import Dict, Any, Optional
 from datetime import datetime, timezone
-from ..config import settings
+from config import settings
 
 # Базовый URL для тестового режима ЮKassa
 YOOKASSA_API_URL = "https://api.yookassa.ru/v3"
