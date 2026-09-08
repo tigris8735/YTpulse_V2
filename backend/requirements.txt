@@ -16,7 +16,7 @@ passlib[bcrypt]==1.7.4
 bcrypt==4.2.0
 
 opencv-python==4.10.0.84
-mediapipe==0.10.14
+mediapipe==1.0.1
 Pillow==10.4.0
 numpy==1.26.4
 
