@@ -6,10 +6,10 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any, Optional
 import json
 
-from ..database import get_db
-from ..models import TrendsCache, PreviewTags
-from ..services.youtube_client import fetch_trends
-from ..services.analyzer_engine import analyze_preview
+from database import get_db
+from models import TrendsCache, PreviewTags
+from services.youtube_client import fetch_trends
+from services.analyzer_engine import analyze_preview
 
 router = APIRouter()
 
