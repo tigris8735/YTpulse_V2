@@ -9,12 +9,17 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="YT Pulse API", version="1.0")
 
+origins = [
+    "https://ytpulse-v2-1.onrender.com",  # URL вашего фронта
+    "http://localhost:5173",              # для локальной разработки (опционально)
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
