@@ -22,12 +22,12 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization"],
 )
 
-app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
-app.include_router(trends.router, prefix="/api/trends", tags=["Trends"])
-app.include_router(preview.router, prefix="/api/preview", tags=["Preview"])
-app.include_router(generate.router, prefix="/api/generate", tags=["Generate"])
-app.include_router(jobs.router, prefix="/api/jobs", tags=["Jobs"])
-app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(trends.router, prefix="/trends", tags=["Trends"])
+app.include_router(preview.router, prefix="/preview", tags=["Preview"])
+app.include_router(generate.router, prefix="/generate", tags=["Generate"])
+app.include_router(jobs.router, prefix="/jobs", tags=["Jobs"])
+app.include_router(payments.router, prefix="/payments", tags=["Payments"])
 
 @app.get("/")
 def root():
