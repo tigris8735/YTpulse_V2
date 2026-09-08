@@ -1,0 +1,34 @@
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.default {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+.pro {
+  background: var(--pro);
+  color: #fff;
+}
+
+.free {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-line);
+}
+
+.success {
+  background: var(--success);
+  color: #000;
+}
+
+.test {
+  background: var(--test);
+  color: #000;
+}

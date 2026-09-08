@@ -1,0 +1,66 @@
+.authContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.authBox {
+  background: var(--bg-surface);
+  padding: 2rem;
+  border-radius: var(--radius-large);
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--border-line);
+}
+
+.authBox h1 {
+  font-size: 2rem;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.authBox h2 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.authBox form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.authBox input {
+  width: 100%;
+}
+
+.primaryBtn {
+  background: var(--accent);
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.error {
+  background: rgba(255, 59, 78, 0.1);
+  color: var(--accent);
+  padding: 0.5rem;
+  border-radius: var(--radius-small);
+  margin-bottom: 1rem;
+}
+
+.switch {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.switch a {
+  color: var(--accent);
+}

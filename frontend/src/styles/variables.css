@@ -1,0 +1,18 @@
+:root {
+  --bg-primary: #07080C;
+  --bg-surface: #12141C;
+  --border-line: #262B3A;
+  --accent: #FF3B4E;
+  --pro: #8B6CFF;
+  --success: #3DDC97;
+  --test: #F5C14A;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A8B8;
+  --radius-large: 16px;
+  --radius-medium: 12px;
+  --radius-small: 10px;
+  --sidebar-width: 228px;
+  --bottom-bar-height: 72px;
+  --rail-width: 320px;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}

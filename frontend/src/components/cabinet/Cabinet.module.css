@@ -1,0 +1,112 @@
+.container {
+  width: 100%;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border-line);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-small);
+  color: var(--text-secondary);
+  transition: background 0.2s;
+}
+
+.tab:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.activeTab {
+  background: var(--accent);
+  color: #fff;
+}
+
+.section {
+  background: var(--bg-surface);
+  padding: 1.5rem;
+  border-radius: var(--radius-medium);
+}
+
+.section h3 {
+  margin-bottom: 1rem;
+}
+
+.section p {
+  margin-bottom: 0.5rem;
+}
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.logout {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-small);
+}
+
+.manage {
+  background: var(--pro);
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-small);
+}
+
+.testBadge {
+  margin-top: 1rem;
+  color: var(--test);
+  font-size: 0.9rem;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+}
+
+.featureList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-line);
+}
+
+.proBadge {
+  background: var(--pro);
+  color: #fff;
+  padding: 0.1rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+}
+
+.freeBadge {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  padding: 0.1rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+}
+
+.locked {
+  margin-left: 0.5rem;
+}
+
+.paymentTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.paymentTable th, .paymentTable td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-line);
+  text-align: left;
+}

@@ -1,0 +1,98 @@
+.container {
+  display: flex;
+  gap: 2rem;
+  height: 100%;
+}
+
+.form {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  padding: 1.5rem;
+  border-radius: var(--radius-medium);
+}
+
+.form h3 {
+  margin-bottom: 1rem;
+}
+
+.form label {
+  display: block;
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.form input, .form select {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-line);
+  border-radius: var(--radius-small);
+  color: var(--text-primary);
+}
+
+.primary {
+  margin-top: 1rem;
+  width: 100%;
+  background: var(--pro);
+  color: #fff;
+  padding: 0.6rem;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+}
+
+.status {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.queued {
+  color: var(--test);
+}
+
+.queueBtn {
+  margin-top: 1rem;
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.6rem;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+}
+
+.gallery {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+}
+
+.resultCard {
+  aspect-ratio: 16/9;
+  background: var(--bg-surface);
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+}
+
+.resultCard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  width: 100%;
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 3rem 0;
+}

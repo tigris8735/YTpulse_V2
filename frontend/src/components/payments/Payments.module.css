@@ -1,0 +1,104 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background: var(--bg-surface);
+  padding: 1.5rem;
+  border-radius: var(--radius-large);
+  border: 1px solid var(--border-line);
+  text-align: center;
+}
+
+.card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.term {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  text-align: left;
+}
+
+.features li {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border-line);
+  font-size: 0.9rem;
+}
+
+.highlight {
+  border-color: var(--pro);
+  box-shadow: 0 0 0 2px var(--pro);
+}
+
+.testBadge {
+  background: var(--test);
+  color: #000;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.selectBtn {
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+  width: 100%;
+}
+
+.checkout, .result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.result .icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.result h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.result p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.cta {
+  background: var(--pro);
+  color: #fff;
+  padding: 0.6rem 2rem;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+}
