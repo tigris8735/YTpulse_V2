@@ -2,10 +2,9 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from ..database import get_db
-from ..models import User
-from ..auth import hash_password, verify_password, create_jwt , decode_jwt
-import datetime
+from database import get_db
+from models import User
+from auth import hash_password, verify_password, create_jwt , decode_jwt
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status
 
