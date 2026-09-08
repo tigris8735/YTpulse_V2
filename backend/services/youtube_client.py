@@ -3,8 +3,7 @@ import httpx
 from typing import List, Dict, Any
 from ..config import settings
 
-YOUTUBE_API_URL = "AIzaSyD6X52BJFFQnQbZg6hyaoqBE7x0o-ujsV4"
-
+YOUTUBE_API_URL = settings.YOUTUBE_API_KEY
 async def fetch_trends(region: str = "US", max_results: int = 50) -> List[Dict[str, Any]]:
     """
     Получает список популярных видео из региона US через mostPopular.
