@@ -34,8 +34,9 @@ const TrendsFeed = () => {
   };
 
   const handleCardClick = (video) => {
+    if (!video || !video.video_id) return; // защита
     setSelectedVideo(video);
-    navigate(`/preview?videoId=${video.id}`);
+    navigate(`/preview?videoId=${video.video_id}`);
   };
 
   if (loading) return <div className="loader">Загрузка трендов...</div>;
@@ -47,9 +48,11 @@ const TrendsFeed = () => {
         <button onClick={handleRefresh} className={styles.refreshBtn}>Обновить кэш</button>
       </div>
       <div className={styles.grid}>
-        {videos.map((video) => (
-          <VideoCard key={video.id} video={video} onClick={() => handleCardClick(video)} />
-        ))}
+        {videos
+          .filter(video => video && typeof video === 'object' && video.video_id && video.title)
+          .map((video) => (
+            <VideoCard key={video.video_id} video={video} onClick={() => handleCardClick(video)} />
+          ))}
       </div>
     </div>
   );
