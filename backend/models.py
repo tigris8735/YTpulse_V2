@@ -44,8 +44,6 @@ class TrendsCache(Base):
 class PreviewTags(Base):
     __tablename__ = "preview_tags"
 
-    id = Column(String, primary_key=True)  # вместо Integer, autoincrement
-
     video_id = Column(String, primary_key=True)
     face_closeup = Column(Boolean, default=False)
     high_contrast = Column(Boolean, default=False)

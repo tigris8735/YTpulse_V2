@@ -134,7 +134,7 @@ async def get_trends(
 
     # Если кэш есть и не протух, используем его
     if cache_entry:
-        age = datetime.now(timezone.utc) - cache_entry.fetched_at
+        age = datetime.now(timezone.utc) - cache_entry.fetched_at.replace(tzinfo=timezone.utc)
         if age.total_seconds() < CACHE_TTL_HOURS * 3600:
             videos = cache_entry.youtube_json  # список словарей
             # Обогащаем тегами
