@@ -30,7 +30,7 @@ class User(Base):
 class TrendsCache(Base):
     __tablename__ = "trends_cache"
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True) # qqqqqqq
     filter = Column(String(20), nullable=False, index=True)
     region = Column(String(5), nullable=False, default="US")
     youtube_json = Column(JSON, nullable=False)
