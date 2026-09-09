@@ -117,7 +117,7 @@ def analyze_new_videos(video_ids: List[str], db: Session):
 
 @router.get("/")
 @router.get("")
-def get_trends(
+async def get_trends(
     filter: str = Query("all", enum=["all", "shorts", "longform", "gaming", "ai", "finance"]),
     db: Session = Depends(get_db)
 ):
@@ -150,7 +150,7 @@ def get_trends(
 
     # 2. Кэш отсутствует или протух — загружаем свежие данные
     try:
-        raw_videos = fetch_trends(region="US", max_results=50)
+        raw_videos = await fetch_trends(region="US", max_results=50)
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"YouTube API error: {str(e)}")
 
@@ -181,7 +181,7 @@ def get_trends(
 
 
 @router.post("/refresh")
-def refresh_trends(
+async def refresh_trends(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
@@ -194,7 +194,7 @@ def refresh_trends(
 
     # Загружаем свежие данные
     try:
-        raw_videos = fetch_trends(region="US", max_results=50)
+        raw_videos = await fetch_trends(region="US", max_results=50)
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"YouTube API error: {str(e)}")
 
