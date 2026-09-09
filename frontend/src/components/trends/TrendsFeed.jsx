@@ -16,14 +16,14 @@ const TrendsFeed = () => {
     setLoading(true);
     try {
       const data = await getTrends(filter);
-      setVideos(data.items || []);
+      setVideos(data.videos || []);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     loadTrends(currentFilter);
   }, [currentFilter]);
