@@ -82,7 +82,6 @@ def enrich_with_preview_tags(videos: List[Dict[str, Any]], db: Session) -> List[
             v["score_sum"] = 0
     return videos
 
-
 def analyze_new_videos(video_ids: List[str], db: Session):
     """
     Запускает анализ превью для списка video_id, которых ещё нет в preview_tags.
@@ -117,6 +116,7 @@ def analyze_new_videos(video_ids: List[str], db: Session):
 
 
 @router.get("/")
+@router.get("")
 def get_trends(
     filter: str = Query("all", enum=["all", "shorts", "longform", "gaming", "ai", "finance"]),
     db: Session = Depends(get_db)
