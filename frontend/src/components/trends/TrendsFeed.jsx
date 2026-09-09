@@ -34,7 +34,7 @@ const TrendsFeed = () => {
   };
 
   const handleCardClick = (video) => {
-    if (!video || !video.video_id) return; // защита
+    if (!video || !video.video_id) return;
     setSelectedVideo(video);
     navigate(`/preview?videoId=${video.video_id}`);
   };

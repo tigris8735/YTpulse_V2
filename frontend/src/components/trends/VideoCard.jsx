@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './Trends.module.css';
 
 const VideoCard = ({ video, onClick }) => {
+  if (!video) return null;
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.thumbnail}>
