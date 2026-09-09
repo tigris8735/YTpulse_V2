@@ -47,4 +47,9 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token = create_jwt(str(user.id), user.email)
-    return {"access_token": token, "user_id": str(user.id)}
+    return {
+    "access_token": token,
+    "user_id": str(user.id),
+    "email": user.email,
+    "plan": user.plan
+}

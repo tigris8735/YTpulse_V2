@@ -23,12 +23,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(async (email, password) => {
     const data = await authApi.login(email, password);
-    // data: { access_token, user: { id, email, plan, pro_expires_at } }
+    // data теперь содержит access_token, user_id, email, plan
+    const userData = {
+      id: data.user_id,
+      email: data.email,
+      plan: data.plan
+    };
     localStorage.setItem('access_token', data.access_token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setUser(data.user);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
     return data;
-  }, []);
+  } , []);
 
   const register = useCallback(async (email, password) => {
     const data = await authApi.register(email, password);
