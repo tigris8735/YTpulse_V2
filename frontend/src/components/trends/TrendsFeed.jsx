@@ -16,6 +16,7 @@ const TrendsFeed = () => {
     setLoading(true);
     try {
       const data = await getTrends(filter);
+      console.log('📦 Данные от бэкенда:', data);
       setVideos(data.videos || []);
     } catch (err) {
       console.error(err);
