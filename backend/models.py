@@ -44,14 +44,15 @@ class TrendsCache(Base):
 class PreviewTags(Base):
     __tablename__ = "preview_tags"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    video_id = Column(String(50), unique=True, nullable=False, index=True)
-    face_closeup = Column(Boolean, nullable=False, default=False)
-    high_contrast = Column(Boolean, nullable=False, default=False)
-    text_area = Column(Boolean, nullable=False, default=False)
-    center_object = Column(Boolean, nullable=False, default=False)
-    score_sum = Column(Integer, nullable=False, default=0)
-    analyzed_at = Column(DateTime, default=utc_now)
+    id = Column(String, primary_key=True)  # вместо Integer, autoincrement
+
+    video_id = Column(String, primary_key=True)
+    face_closeup = Column(Boolean, default=False)
+    high_contrast = Column(Boolean, default=False)
+    text_area = Column(Boolean, default=False)
+    center_object = Column(Boolean, default=False)
+    score_sum = Column(Integer, default=0)
+    analyzed_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
 class GenerationJob(Base):
