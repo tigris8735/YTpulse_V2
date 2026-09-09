@@ -2,7 +2,12 @@ import React from 'react';
 import styles from './Trends.module.css';
 
 const VideoCard = ({ video, onClick }) => {
-  if (!video) return null;
+  if (!video) return null; // если видео нет – ничего не рендерим
+
+  // Безопасное чтение полей
+  const title = video.title || 'Без названия';
+  const channel = video.channel_title || 'Неизвестный канал';
+  const thumbnail = video.thumbnail || '';
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.thumbnail}>
