@@ -8,22 +8,23 @@ const VideoCard = ({ video, onClick }) => {
   const channel = video.channel_title || 'Неизвестный канал';
   const thumbnail = video.thumbnail || '';
   const views = video.views ? Number(video.views).toLocaleString() : '0';
-  const duration = video.duration ? formatDuration(video.duration) : 'N/A';
 
-  const formatDuration = (seconds) => {
-    if (!seconds) return 'N/A';
+  // Простой расчёт длительности прямо внутри
+  let durationStr = 'N/A';
+  if (video.duration) {
+    const seconds = video.duration;
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
+    if (h > 0) durationStr = `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    else durationStr = `${m}:${s.toString().padStart(2, '0')}`;
+  }
 
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.thumbnail}>
         <img src={thumbnail} alt={title} loading="lazy" />
-        <span className={styles.duration}>{duration}</span>
+        <span className={styles.duration}>{durationStr}</span>
       </div>
       <div className={styles.info}>
         <h3>{title}</h3>
