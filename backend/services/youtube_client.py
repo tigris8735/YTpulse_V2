@@ -2,35 +2,34 @@
 import httpx
 from typing import List, Dict, Any
 from config import settings
+import os 
 
-YOUTUBE_API_URL = settings.YOUTUBE_API_KEY
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 async def fetch_trends(region: str = "US", max_results: int = 50) -> List[Dict[str, Any]]:
-    """
-    Получает список популярных видео из региона US через mostPopular.
-    Возвращает список словарей с полями:
-        - video_id
-        - title
-        - channel_title
-        - channel_id
-        - views (строка)
-        - duration (в секундах, int)
-        - thumbnail (URL, предпочтительно maxres или hqdefault)
-        - category_id
-        - published_at
-    """
+    if not YOUTUBE_API_KEY:
+        raise ValueError("YOUTUBE_API_KEY is not set")
+
+    url = "https://www.googleapis.com/youtube/v3/videos"
     params = {
         "part": "snippet,contentDetails,statistics",
         "chart": "mostPopular",
         "regionCode": region,
         "maxResults": max_results,
-        "key": settings.YOUTUBE_API_KEY,
+        "key": YOUTUBE_API_KEY,
     }
 
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        response = await client.get(YOUTUBE_API_URL, params=params)
-        response.raise_for_status()
-        data = response.json()
+    # Логируем URL и ключ (скрывая часть ключа для безопасности)
+    masked_key = YOUTUBE_API_KEY[:4] + "..." + YOUTUBE_API_KEY[-4:]
+    print(f"🔍 Requesting YouTube API: {url}?part={params['part']}&chart={params['chart']}&regionCode={params['regionCode']}&maxResults={params['maxResults']}&key={masked_key}")
 
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.get(url, params=params)
+            response.raise_for_status()
+            data = response.json()
+        except Exception as e:
+            print(f"YouTube API request failed: {e}")
+            raise 
     videos = []
     for item in data.get("items", []):
         # Извлекаем длительность (ISO 8601 -> секунды)
