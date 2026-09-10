@@ -13,11 +13,11 @@ from services.yoomoney_client import create_payment_link, check_payment_status
 router = APIRouter()
 
 class PaymentRequest(BaseModel):
-    plan: str  # например, "pro"
+    term: str
 
 class PaymentResponse(BaseModel):
     payment_url: str
-    term: str
+
 
 @router.post("/create", response_model=PaymentResponse)
 def create_payment(
