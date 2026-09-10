@@ -1,172 +1,131 @@
-# backend/services/ai_clients.py
-import httpx
+import os
 import json
-from typing import Dict, Any, List, Optional
-from tenacity import retry, stop_after_attempt, wait_exponential
-from config import settings
+import httpx
+from typing import Optional, Dict, Any, List, AsyncGenerator
 
-# ============================================
-# ТЕКСТОВЫЕ МОДЕЛИ (Groq / Gemini)
-# ============================================
+# Конфигурация из переменных окружения
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+OPENROUTER_DEFAULT_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
 
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-async def generate_text_groq(prompt: str, max_tokens: int = 300) -> str:
+class OpenRouterClient:
     """
-    Генерация текста через Groq API.
+    Клиент для работы с OpenRouter API.
+    Поддерживает синхронные и асинхронные запросы, потоковый режим.
     """
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {settings.GROQ_API_KEY}",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "model": "mixtral-8x7b-32768",
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": max_tokens,
-        "temperature": 0.8,
-    }
-    
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(url, json=payload, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-        return data["choices"][0]["message"]["content"].strip()
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        default_model: Optional[str] = None
+    ):
+        self.api_key = api_key or OPENROUTER_API_KEY
+        if not self.api_key:
+            raise ValueError("OPENROUTER_API_KEY не задан в переменных окружения")
+        self.base_url = base_url or OPENROUTER_BASE_URL
+        self.default_model = default_model or OPENROUTER_DEFAULT_MODEL
 
-
-@retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=1, max=5))
-async def generate_text_gemini(prompt: str, max_tokens: int = 300) -> str:
-    """
-    Генерация текста через Google Gemini API (fallback).
-    """
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={settings.GEMINI_API_KEY}"
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "maxOutputTokens": max_tokens,
-            "temperature": 0.8,
+    def _headers(self) -> Dict[str, str]:
+        """Возвращает заголовки для запросов к OpenRouter."""
+        return {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://ytpulse-v2.onrender.com",  # или ваш сайт
+            "X-Title": "YT Pulse",
         }
-    }
-    
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(url, json=payload)
-        response.raise_for_status()
-        data = response.json()
-        return data["candidates"][0]["content"]["parts"][0]["text"].strip()
 
+    async def generate(
+        self,
+        prompt: str,
+        model: Optional[str] = None,
+        system_prompt: Optional[str] = None,
+        temperature: float = 0.7,
+        max_tokens: int = 1024,
+        stream: bool = False,
+    ) -> str:
+        """
+        Отправляет запрос к OpenRouter и возвращает сгенерированный текст.
+        """
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
 
-async def generate_text(prompt: str, max_tokens: int = 300) -> str:
+        payload = {
+            "model": model or self.default_model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": stream,
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{self.base_url}/chat/completions",
+                headers=self._headers(),
+                json=payload,
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+
+    async def generate_stream(
+        self,
+        prompt: str,
+        model: Optional[str] = None,
+        system_prompt: Optional[str] = None,
+        temperature: float = 0.7,
+        max_tokens: int = 1024,
+    ) -> AsyncGenerator[str, None]:
+        """
+        Генерирует текст в потоковом режиме (постепенно выдаёт кусочки).
+        """
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
+        payload = {
+            "model": model or self.default_model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": True,
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            async with client.stream(
+                "POST",
+                f"{self.base_url}/chat/completions",
+                headers=self._headers(),
+                json=payload,
+            ) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    if line.startswith("data: "):
+                        chunk = line[6:]
+                        if chunk == "[DONE]":
+                            break
+                        try:
+                            data = json.loads(chunk)
+                            delta = data.get("choices", [{}])[0].get("delta", {})
+                            content = delta.get("content", "")
+                            if content:
+                                yield content
+                        except json.JSONDecodeError:
+                            continue
+
+# Функции-обёртки для удобства использования
+async def generate_with_openrouter(
+    prompt: str,
+    system_prompt: Optional[str] = None,
+    model: Optional[str] = None,
+    **kwargs
+) -> str:
     """
-    Основная функция генерации текста.
-    Сначала пробует Groq, при ошибке — Gemini.
+    Упрощённая функция для вызова OpenRouter.
     """
-    try:
-        return await generate_text_groq(prompt, max_tokens)
-    except Exception as e:
-        print(f"Groq failed: {e}, falling back to Gemini")
-        try:
-            return await generate_text_gemini(prompt, max_tokens)
-        except Exception as e2:
-            print(f"Gemini also failed: {e2}")
-            raise Exception("All text generation providers failed")
+    client = OpenRouterClient()
+    return await client.generate(prompt, model=model, system_prompt=system_prompt, **kwargs)
 
-
-# ============================================
-# ИЗОБРАЖЕНИЯ (Pollinations / Gemini Flash Image)
-# ============================================
-
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-async def generate_image_pollinations(prompt: str) -> str:
-    """
-    Генерация изображения через Pollinations.ai.
-    Возвращает URL готового изображения.
-    """
-    # Pollinations бесплатный, не требует ключа
-    url = f"https://image.pollinations.ai/prompt/{prompt}?width=1280&height=720&nologo=true"
-    
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get(url)
-        response.raise_for_status()
-        # Pollinations возвращает изображение, но нам нужен URL для скачивания
-        # Возвращаем сгенерированный URL (он же и есть запрос)
-        return url
-
-
-@retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=1, max=5))
-async def generate_image_gemini(prompt: str) -> str:
-    """
-    Генерация изображения через Gemini Flash Image (экспериментальный).
-    Возвращает URL изображения (или сохраняет и возвращает путь).
-    """
-    # Gemini Flash Image пока в бета-доступе, используем Imagen через Vertex AI или другой endpoint
-    # Для прототипа используем заглушку — возвращаем заглушку-изображение
-    # В реальном проекте здесь будет вызов к Gemini Image API
-    fallback_url = "https://via.placeholder.com/1280x720/1a1a2e/ffffff?text=YT+Pulse+Preview"
-    return fallback_url
-
-
-async def generate_image(prompt: str) -> str:
-    """
-    Основная функция генерации изображения.
-    Сначала пробует Pollinations, при ошибке — Gemini (или заглушка).
-    """
-    try:
-        return await generate_image_pollinations(prompt)
-    except Exception as e:
-        print(f"Pollinations failed: {e}, falling back to Gemini")
-        try:
-            return await generate_image_gemini(prompt)
-        except Exception as e2:
-            print(f"Gemini also failed: {e2}")
-            # Возвращаем заглушку
-            return "https://via.placeholder.com/1280x720/1a1a2e/ffffff?text=YT+Pulse+Preview"
-
-
-# ============================================
-# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ГЕНЕРАЦИИ ПРЕВЬЮ
-# ============================================
-
-async def generate_preview_prompt(trend_title: str, trend_description: str = "") -> str:
-    """
-    Генерирует промпт для превью на основе данных о тренде.
-    """
-    base_prompt = f"""
-    Create a YouTube thumbnail for a video about: "{trend_title}"
-    
-    The thumbnail should be:
-    - Bright and eye-catching
-    - Have a clear focal point
-    - Use bold colors (preferably red, yellow, or white text on dark background)
-    - Include the main topic or a surprising element
-    - Look clickable and professional
-    
-    Style: YouTube standard thumbnail, 16:9 aspect ratio, high contrast.
-    """
-    return base_prompt
-
-
-async def generate_preview_variants(trend_title: str, trend_description: str = "", num_variants: int = 3) -> List[Dict[str, str]]:
-    """
-    Генерирует 3 варианта превью.
-    Возвращает список словарей: [{"prompt": "...", "image_url": "..."}, ...]
-    """
-    # 1. Генерируем промпт для текста
-    base_prompt = await generate_preview_prompt(trend_title, trend_description)
-    
-    variants = []
-    for i in range(num_variants):
-        # Генерируем немного отличающиеся промпты для каждого варианта
-        variation_prompt = f"{base_prompt}\n\nVariant {i+1}: Try a different angle or composition."
-        
-        # Генерируем текст (пока не используем в прототипе, но задел)
-        # text = await generate_text(base_prompt, max_tokens=100)
-        
-        # Генерируем изображение
-        image_url = await generate_image(base_prompt.replace('\n', ' '))
-        
-        variants.append({
-            "prompt": base_prompt,
-            "image_url": image_url,
-            "variant": i + 1
-        })
-    
-    return variants
+# Если у вас уже были функции для OpenAI, вы можете заменить их вызовы на эти
