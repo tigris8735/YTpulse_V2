@@ -27,10 +27,10 @@ def create_payment(
 ):
     # Определяем сумму и длительность в зависимости от срока
     if data.term == "month":
-        amount = 500.0
+        amount = 700.0
         duration_days = 30
     elif data.term == "year":
-        amount = 4500.0
+        amount = 7000.0
         duration_days = 365
     else:
         raise HTTPException(status_code=400, detail="Invalid term. Use 'month' or 'year'.")
