@@ -32,7 +32,7 @@ def create_payment_link(
         label=label
     )
     # В библиотеке yoomoney метод redirect_url возвращает готовую ссылку
-    return quickpay.redirect_url
+    return quickpay.redirected_url
 
 def check_payment_status(label: str) -> bool:
     """
