@@ -21,3 +21,4 @@ Pillow==10.4.0
 numpy==1.26.4
 
 tenacity==9.0.0
+yoomoney
