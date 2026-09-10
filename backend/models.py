@@ -74,8 +74,7 @@ class Payment(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
-    payment_id = Column(String(100), unique=True, nullable=True)  # ID платежа в YooMoney
-    label = Column(String(100), unique=True, nullable=True)       # метка для отслеживания
+    label = Column(String(100), unique=True, nullable=False)  # метка для ЮMoney
     term = Column(String(20), nullable=False)
     amount = Column(Integer, nullable=False)
     status = Column(String(20), nullable=False, default="pending")

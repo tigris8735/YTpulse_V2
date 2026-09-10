@@ -17,6 +17,7 @@ class PaymentRequest(BaseModel):
 
 class PaymentResponse(BaseModel):
     payment_url: str
+    term: str
 
 @router.post("/create", response_model=PaymentResponse)
 def create_payment(
@@ -24,13 +25,15 @@ def create_payment(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Создает ссылку на оплату для подписки Pro.
-    """
-    # Определяем сумму в зависимости от плана (пример)
-    amount = 500.0  # 500 рублей
-    if data.plan != "pro":
-        raise HTTPException(status_code=400, detail="Invalid plan")
+    # Определяем сумму и длительность в зависимости от срока
+    if data.term == "month":
+        amount = 500.0
+        duration_days = 30
+    elif data.term == "year":
+        amount = 4500.0
+        duration_days = 365
+    else:
+        raise HTTPException(status_code=400, detail="Invalid term. Use 'month' or 'year'.")
 
     # Генерируем уникальный label для этого платежа
     label = f"user_{current_user.id}_{uuid.uuid4().hex[:8]}"
@@ -40,16 +43,17 @@ def create_payment(
         payment_url = create_payment_link(
             amount=amount,
             label=label,
-            description=f"Подписка YT Pulse Pro для {current_user.email}"
+            description=f"Подписка YT Pulse Pro ({data.term}) для {current_user.email}"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"YooMoney error: {str(e)}")
 
-    # Сохраняем информацию о платеже в БД (для отслеживания)
+    # Сохраняем информацию о платеже в БД
     payment = Payment(
         user_id=current_user.id,
-        amount=amount,
+        amount=int(amount),
         label=label,
+        term=data.term,  # сохраняем срок
         status="pending",
         created_at=datetime.now(timezone.utc)
     )
