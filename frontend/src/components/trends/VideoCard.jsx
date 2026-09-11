@@ -2,21 +2,35 @@ import React from 'react';
 import styles from './Trends.module.css';
 
 const VideoCard = ({ video, onClick }) => {
+  if (!video) return null;
+
+  const title = video.title || 'Без названия';
+  const channel = video.channel_title || 'Неизвестный канал';
+  const thumbnail = video.thumbnail || '';
+  const views = video.views ? Number(video.views).toLocaleString() : '0';
+
+  // Простой расчёт длительности прямо внутри
+  let durationStr = 'N/A';
+  if (video.duration) {
+    const seconds = video.duration;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) durationStr = `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    else durationStr = `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.thumbnail}>
-        <img
-          src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`}
-          alt={video.snippet.title}
-          loading="lazy"
-        />
-        <span className={styles.duration}>{video.contentDetails?.duration || 'N/A'}</span>
+        <img src={thumbnail} alt={title} loading="lazy" />
+        <span className={styles.duration}>{durationStr}</span>
       </div>
       <div className={styles.info}>
-        <h3>{video.snippet.title}</h3>
-        <p>{video.snippet.channelTitle}</p>
+        <h3>{title}</h3>
+        <p>{channel}</p>
         <div className={styles.meta}>
-          <span>{video.statistics?.viewCount?.toLocaleString() || 0} просмотров</span>
+          <span>{views} просмотров</span>
         </div>
       </div>
     </div>

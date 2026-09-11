@@ -7,13 +7,8 @@ from routers import auth, trends, preview, generate, jobs, payments
 
 
 
-app = FastAPI(title="YT Pulse API", version="1.0")
+app = FastAPI(title="YT Pulse API", version="1.0", redirect_slashes=False)
 
-Base.metadata.create_all(bind=engine)
-origins = [
-    "https://ytpulse-v2-1.onrender.com",  # URL вашего фронта
-    "http://localhost:5173",              # для локальной разработки (опционально)
-]
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,6 +24,8 @@ app.include_router(preview.router, prefix="/preview", tags=["Preview"])
 app.include_router(generate.router, prefix="/generate", tags=["Generate"])
 app.include_router(jobs.router, prefix="/jobs", tags=["Jobs"])
 app.include_router(payments.router, prefix="/payments", tags=["Payments"])
+
+Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def root():

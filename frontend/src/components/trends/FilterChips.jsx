@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { FilterContext } from '../../context/FilterContext';
 import styles from './Trends.module.css';
 
-const filters = ['All', 'Shorts', 'Longform', 'Gaming', 'AI', 'Finance'];
+const filters = ['all', 'shorts', 'longform', 'gaming', 'ai', 'finance'];
 
 const FilterChips = () => {
   const { currentFilter, setCurrentFilter } = useContext(FilterContext);

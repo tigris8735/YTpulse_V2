@@ -82,7 +82,6 @@ def enrich_with_preview_tags(videos: List[Dict[str, Any]], db: Session) -> List[
             v["score_sum"] = 0
     return videos
 
-
 def analyze_new_videos(video_ids: List[str], db: Session):
     """
     Запускает анализ превью для списка video_id, которых ещё нет в preview_tags.
@@ -117,7 +116,8 @@ def analyze_new_videos(video_ids: List[str], db: Session):
 
 
 @router.get("/")
-def get_trends(
+@router.get("")
+async def get_trends(
     filter: str = Query("all", enum=["all", "shorts", "longform", "gaming", "ai", "finance"]),
     db: Session = Depends(get_db)
 ):
@@ -134,7 +134,7 @@ def get_trends(
 
     # Если кэш есть и не протух, используем его
     if cache_entry:
-        age = datetime.now(timezone.utc) - cache_entry.fetched_at
+        age = datetime.now(timezone.utc) - cache_entry.fetched_at.replace(tzinfo=timezone.utc)
         if age.total_seconds() < CACHE_TTL_HOURS * 3600:
             videos = cache_entry.youtube_json  # список словарей
             # Обогащаем тегами
@@ -150,7 +150,7 @@ def get_trends(
 
     # 2. Кэш отсутствует или протух — загружаем свежие данные
     try:
-        raw_videos = fetch_trends(region="US", max_results=50)
+        raw_videos = await fetch_trends(region="US", max_results=50)
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"YouTube API error: {str(e)}")
 
@@ -181,7 +181,7 @@ def get_trends(
 
 
 @router.post("/refresh")
-def refresh_trends(
+async def refresh_trends(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
@@ -194,7 +194,7 @@ def refresh_trends(
 
     # Загружаем свежие данные
     try:
-        raw_videos = fetch_trends(region="US", max_results=50)
+        raw_videos = await fetch_trends(region="US", max_results=50)
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"YouTube API error: {str(e)}")
 

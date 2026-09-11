@@ -16,14 +16,15 @@ const TrendsFeed = () => {
     setLoading(true);
     try {
       const data = await getTrends(filter);
-      setVideos(data.items || []);
+      console.log('📦 Данные от бэкенда:', data);
+      setVideos(data.videos || []);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     loadTrends(currentFilter);
   }, [currentFilter]);
@@ -34,8 +35,9 @@ const TrendsFeed = () => {
   };
 
   const handleCardClick = (video) => {
+    if (!video || !video.video_id) return;
     setSelectedVideo(video);
-    navigate(`/preview?videoId=${video.id}`);
+    navigate(`/preview?videoId=${video.video_id}`);
   };
 
   if (loading) return <div className="loader">Загрузка трендов...</div>;
@@ -47,9 +49,11 @@ const TrendsFeed = () => {
         <button onClick={handleRefresh} className={styles.refreshBtn}>Обновить кэш</button>
       </div>
       <div className={styles.grid}>
-        {videos.map((video) => (
-          <VideoCard key={video.id} video={video} onClick={() => handleCardClick(video)} />
-        ))}
+        {videos
+          .filter(video => video && typeof video === 'object' && video.video_id && video.title)
+          .map((video) => (
+            <VideoCard key={video.video_id} video={video} onClick={() => handleCardClick(video)} />
+          ))}
       </div>
     </div>
   );

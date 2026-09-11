@@ -8,8 +8,8 @@ import uuid
 
 from database import get_db
 from models import User, GenerationJob
-from services.ai_clients import generate_preview_variants
-from auth import get_current_user, require_pro  # эти функции будут добавлены в auth.py
+from services.ai_clients import generate_with_openrouter
+from auth import get_current_user, require_pro
 
 router = APIRouter()
 
@@ -28,17 +28,75 @@ class GenerateResponse(BaseModel):
     status: str
     variants: List[VariantResponse]
 
+# ---------------------------------------------------------------------
+# Вспомогательная функция для генерации вариантов через OpenRouter
+# ---------------------------------------------------------------------
+async def generate_preview_variants(
+    trend_title: str,
+    trend_description: str,
+    num_variants: int = 3
+) -> List[Dict[str, Any]]:
+    """
+    Генерирует num_variants промптов для превью с помощью OpenRouter,
+    затем (в заглушке) создаёт ссылки на изображения.
+    В реальном проекте здесь должен быть вызов сервиса генерации изображений.
+    """
+    system_prompt = (
+        "You are an expert YouTube thumbnail designer. "
+        "Generate creative, engaging, and clickable thumbnail concepts for a video about the given topic. "
+        "Provide only the prompt text for image generation, nothing else. "
+        "Each prompt should be on a new line, without numbering or extra text."
+    )
+    user_prompt = (
+        f"Topic: {trend_title}\n"
+        f"Description: {trend_description}\n"
+        f"Generate {num_variants} different thumbnail concepts, each as a distinct prompt."
+    )
+
+    # 1. Получаем ответ от OpenRouter
+    try:
+        response = await generate_with_openrouter(
+            prompt=user_prompt,
+            system_prompt=system_prompt,
+            temperature=0.8,
+            max_tokens=500
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"OpenRouter error: {str(e)}")
+
+    # 2. Парсим ответ – ожидаем список промптов по одному на строку
+    prompts = [line.strip() for line in response.split('\n') if line.strip()]
+    # Если получилось меньше num_variants, дублируем последний (или можно сгенерировать заново)
+    while len(prompts) < num_variants:
+        prompts.append(prompts[-1] if prompts else "default thumbnail prompt")
+    prompts = prompts[:num_variants]
+
+    # 3. Для каждого промпта генерируем изображение (заглушка)
+    variants = []
+    for i, prompt in enumerate(prompts, start=1):
+        # ⚠️ Здесь должен быть реальный вызов генерации картинки
+        # Например:
+        #   image_url = await generate_image_from_prompt(prompt)
+        # Пока используем заглушку – placeholder
+        image_url = f"https://via.placeholder.com/1280x720?text={prompt[:30].replace(' ', '+')}"
+        variants.append({
+            "variant": i,
+            "image_url": image_url,
+            "prompt": prompt
+        })
+
+    return variants
+
+# ---------------------------------------------------------------------
+# Эндпоинт генерации (асинхронный)
+# ---------------------------------------------------------------------
 @router.post("/thumb", response_model=GenerateResponse)
-def generate_thumb(
+async def generate_thumb(
     data: GenerateRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)  # проверяем авторизацию
+    current_user: User = Depends(get_current_user)
 ):
-    """
-    Генерация 3 вариантов превью для указанного тренда.
-    Доступно только пользователям с планом Pro.
-    """
-    # 1. Проверяем план Pro
+    # 1. Проверяем Pro-подписку
     if not require_pro(current_user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -59,8 +117,8 @@ def generate_thumb(
     db.refresh(job)
 
     try:
-        # 3. Запускаем генерацию 3 вариантов
-        variants_data = generate_preview_variants(
+        # 3. Генерируем варианты (асинхронно)
+        variants_data = await generate_preview_variants(
             trend_title=data.trend_title,
             trend_description=data.trend_description,
             num_variants=3
@@ -86,7 +144,8 @@ def generate_thumb(
 
     # 5. Обновляем задачу (статус ready)
     job.status = "ready"
-    job.file_url = variants_response[0].image_url  # сохраняем ссылку на первый вариант как основной
+    if variants_response:
+        job.file_url = variants_response[0].image_url  # сохраняем ссылку на первый вариант
     job.updated_at = datetime.now(timezone.utc)
     db.commit()
 

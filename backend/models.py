@@ -30,7 +30,7 @@ class User(Base):
 class TrendsCache(Base):
     __tablename__ = "trends_cache"
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True) # qqqqqqq
     filter = Column(String(20), nullable=False, index=True)
     region = Column(String(5), nullable=False, default="US")
     youtube_json = Column(JSON, nullable=False)
@@ -44,14 +44,13 @@ class TrendsCache(Base):
 class PreviewTags(Base):
     __tablename__ = "preview_tags"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    video_id = Column(String(50), unique=True, nullable=False, index=True)
-    face_closeup = Column(Boolean, nullable=False, default=False)
-    high_contrast = Column(Boolean, nullable=False, default=False)
-    text_area = Column(Boolean, nullable=False, default=False)
-    center_object = Column(Boolean, nullable=False, default=False)
-    score_sum = Column(Integer, nullable=False, default=0)
-    analyzed_at = Column(DateTime, default=utc_now)
+    video_id = Column(String, primary_key=True)
+    face_closeup = Column(Boolean, default=False)
+    high_contrast = Column(Boolean, default=False)
+    text_area = Column(Boolean, default=False)
+    center_object = Column(Boolean, default=False)
+    score_sum = Column(Integer, default=0)
+    analyzed_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
 class GenerationJob(Base):
@@ -75,7 +74,7 @@ class Payment(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
-    yookassa_id = Column(String(100), unique=True, nullable=False)
+    label = Column(String(100), unique=True, nullable=False)  # метка для ЮMoney
     term = Column(String(20), nullable=False)
     amount = Column(Integer, nullable=False)
     status = Column(String(20), nullable=False, default="pending")
