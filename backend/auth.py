@@ -11,7 +11,7 @@ from config import settings
 from database import get_db
 from models import User
 
-# ============================================
+# ============================================ 
 # Хеширование паролей
 # ============================================
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -82,11 +82,8 @@ def get_current_user(
     return user
 
 def require_pro(user: User) -> bool:
-    """
-    Проверяет, активен ли у пользователя план Pro.
-    """
     if user.plan != "pro":
         return False
-    if user.pro_expires_at is None:
+    if user.pro_expires_at and user.pro_expires_at < datetime.now(timezone.utc):
         return False
-    return user.pro_expires_at > datetime.now(timezone.utc)
+    return True
